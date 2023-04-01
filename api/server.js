@@ -12,6 +12,8 @@ import reviewRoute from "./routes/review.route.js";
 const app = express();
 dotenv.config()
 
+app.use(express.json())
+
 app.use("/api/auth", authRoute);
 app.use('/api/user', userRoute)
 app.use("/api/gigs", gigRoute);
