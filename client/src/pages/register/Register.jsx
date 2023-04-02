@@ -1,4 +1,7 @@
-import './register.scss'
+import { useNavigate } from "react-router-dom";
+import newRequest from "../../utils/newRequest";
+import upload from "../../utils/upload";
+import "./register.scss";
 import React, { useState } from "react";
 
 const Register = () => {
@@ -13,15 +16,37 @@ const Register = () => {
     desc: "",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setUser((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
   };
 
+  const handleSeller = (e) => {
+    setUser((prev) => {
+      return { ...prev, isSeller: e.target.checked };
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const url = await upload(file);
+    try {
+      await newRequest.post("/auth/register", {
+        ...user,
+        img: url,
+      });
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="register">
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="left">
           <h1>Create a new account</h1>
           <label htmlFor="">Username</label>
@@ -54,9 +79,9 @@ const Register = () => {
         <div className="right">
           <h1>I want to become a seller</h1>
           <div className="toggle">
-            <label htmlFor="">Activate the seller account</label>
+            <label htmlFor="">Activate seller account</label>
             <label className="switch">
-              <input type="checkbox" />
+              <input type="checkbox" onChange={handleSeller} />
               <span className="slider round"></span>
             </label>
           </div>
@@ -82,4 +107,4 @@ const Register = () => {
   );
 };
 
-export default Register
+export default Register;
