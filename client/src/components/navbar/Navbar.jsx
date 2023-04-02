@@ -1,30 +1,34 @@
 import { useEffect, useState } from "react"
 import "./navbar.scss"
-import {Link, useLocation} from 'react-router-dom'
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import newRequest from "../../utils/newRequest";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const [active, setActive] = useState(false);
+  const [open, setOpen] = useState(false);
 
-    const [active, setActive] = useState(false)
-    const [open, setOpen] = useState(false)
+  const { pathname } = useLocation();
+  const isActive = () => {
+    window.scrollY > 0 ? setActive(true) : setActive(false);
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", isActive);
 
-    const {pathname} = useLocation()
-    const isActive = () => {
-        window.scrollY>0? setActive(true): setActive(false)
-    }
-    useEffect(() => {
-        window.addEventListener("scroll", isActive);
+    return () => {
+      window.removeEventListener("scroll", isActive);
+    };
+  }, []);
 
-        return()=> {
-            window.removeEventListener("scroll", isActive)
-        }
-    }, []);
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-    const currentUser = {
-        id: 1,
-        username: "Jhon Doe",
-        isSeller: true,
-    }
-
+  const handleLogout = async () => {
+    try {
+      await newRequest.post("auth/logout");
+      localStorage.setItem("currentUser", null);
+      navigate("/");
+    } catch (err) {}
+  };
 
   return (
     <div className={active || pathname !== "/" ? "navbar active" : "navbar"}>
@@ -41,13 +45,14 @@ const Navbar = () => {
           <span>English</span>
           <span>Sign in</span>
           {!currentUser?.isSeller && <span>Become a Seller</span>}
-          {!currentUser && <button>Join</button>}
+          {!currentUser && (
+            <Link className="link" to="/register">
+              <button>Join</button>
+            </Link>
+          )}
           {currentUser && (
             <div className="user" onClick={() => setOpen(!open)}>
-              <img
-                src="https://images.unsplash.com/photo-1680252112129-91e7840cba38?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-                alt=""
-              />
+              <img src={currentUser.img || "/img/noavatar.jpg"} alt="" />
               <span>{currentUser?.username}</span>
               {open && (
                 <div className="options">
@@ -67,7 +72,7 @@ const Navbar = () => {
                   <Link className="link" to="/messages">
                     Messages
                   </Link>
-                  <Link className="link" to="/">
+                  <Link className="link" onClick={handleLogout}>
                     Logout
                   </Link>
                 </div>
@@ -113,6 +118,6 @@ const Navbar = () => {
       )}
     </div>
   );
-}
+};
 
 export default Navbar
