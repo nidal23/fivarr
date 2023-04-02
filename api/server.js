@@ -8,11 +8,13 @@ import orderRoute from "./routes/order.route.js";
 import conversationRoute from "./routes/conversation.route.js";
 import messageRoute from "./routes/message.route.js";
 import reviewRoute from "./routes/review.route.js";
+import cookieParser from 'cookie-parser'
 
 const app = express();
 dotenv.config()
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.use("/api/auth", authRoute);
 app.use('/api/user', userRoute)
@@ -21,6 +23,14 @@ app.use("/api/orders", orderRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messageRoute);
 app.use("/api/reviews", reviewRoute);
+
+app.use((err, req, res, next) => {
+    const errorStatus = err.status || 500
+    const errorMessage = err.message || "Somethins wrong"
+
+
+    return res.status(errorStatus).send(errorMessage)
+})
 
 const connect = async () => {
     try {
