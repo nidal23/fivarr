@@ -2,12 +2,21 @@ import "./gigs.scss"
 import React, { useRef, useState } from "react";
 import { gigs } from "../../data";
 import GigCard from "../../components/gigCard/GigCard";
+import newRequest from "../../utils/newRequest";
+import { useQuery } from "@tanstack/react-query";
 
 const Gigs = () => {
   const [sort, setSort] = useState("sales");
   const [open, setOpen] = useState(false);
   const minRef = useRef();
   const maxRef = useRef();
+
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["repoData"],
+    queryFn: () => newRequest("/gigs"),
+  });
+
+  console.log(data);
 
   const reSort = (type) => {
     setSort(type);

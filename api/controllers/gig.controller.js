@@ -1,5 +1,5 @@
-import Gig from "../models/gig.model"
-import createError from "../utils/createError";
+import Gig from "../models/gig.model.js";
+import createError from "../utils/createError.js";
 
 export const createGig = async (req, res, next) => {
     if (!req.isSeller) return next(createError(403, "Sign in with a seller account to create a gig"))
@@ -46,13 +46,15 @@ export const getGigs = async (req, res, next) => {
     const q = req.query;
     const filters = {
         ...(q.userId && { userId: q.userId }),
+        ...(q.cat && { cat: q.cat }),
         ...((q.min || q.max) && {
-            price: { ...(q.min && { $gt: q.min }), ...(q.max && { $lt: q.max }) },
+            price: {
+                ...(q.min && { $gt: q.min }),
+                ...(q.max && { $lt: q.max }),
+            },
         }),
         ...(q.search && { title: { $regex: q.search, $options: "i" } }),
-
-
-    }
+    };
     try {
         const gigs = await Gig.find(filters)
         res.status(200).json(gigs)
