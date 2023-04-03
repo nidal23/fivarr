@@ -1,13 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
-import "./gig.scss";
-
+import React from "react";
+import "./Gig.scss";
 import { Slider } from "infinite-react-carousel/lib";
+import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
-import { useParams } from "react-router-dom";
 import Reviews from "../../components/reviews/Reviews";
 
-const Gig = () => {
+function Gig() {
   const { id } = useParams();
+
   const { isLoading, error, data } = useQuery({
     queryKey: ["gig"],
     queryFn: () =>
@@ -31,24 +32,23 @@ const Gig = () => {
     enabled: !!userId,
   });
 
-  // console.log(dataUser);
-
-  // console.log(data);
   return (
     <div className="gig">
       {isLoading ? (
-        "Loading..."
+        "loading"
       ) : error ? (
-        "Somthings wrong"
+        "Something went wrong!"
       ) : (
         <div className="container">
           <div className="left">
-            <span className="breadcrumbs">Fivarr - Graphics & Design </span>
+            <span className="breadcrumbs">
+              Fiverr {">"} Graphics & Design {">"}
+            </span>
             <h1>{data.title}</h1>
             {isLoadingUser ? (
-              "loading profile"
+              "loading"
             ) : errorUser ? (
-              "Something went wrong"
+              "Something went wrong!"
             ) : (
               <div className="user">
                 <img
@@ -79,9 +79,9 @@ const Gig = () => {
             <h2>About This Gig</h2>
             <p>{data.desc}</p>
             {isLoadingUser ? (
-              "loading profile"
+              "loading"
             ) : errorUser ? (
-              "Something went wrong"
+              "Something went wrong!"
             ) : (
               <div className="seller">
                 <h2>About The Seller</h2>
@@ -132,7 +132,7 @@ const Gig = () => {
                 </div>
               </div>
             )}
-            <Reviews gigIg={id} />
+            <Reviews gigId={id} />
           </div>
           <div className="right">
             <div className="price">
@@ -151,19 +151,21 @@ const Gig = () => {
               </div>
             </div>
             <div className="features">
-              {data.features.map((feature) => {
+              {data.features.map((feature) => (
                 <div className="item" key={feature}>
                   <img src="/img/greencheck.png" alt="" />
                   <span>{feature}</span>
-                </div>;
-              })}
+                </div>
+              ))}
             </div>
-            <button>Continue</button>
+            <Link to={`/pay/${id}`}>
+              <button>Continue</button>
+            </Link>
           </div>
         </div>
       )}
     </div>
   );
-};
+}
 
 export default Gig;
