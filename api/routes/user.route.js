@@ -1,10 +1,10 @@
-import express from 'express'
-import { fn } from '../controllers/user.controller.js'
+import express from "express";
+import { deleteUser, getUser } from "../controllers/user.controller.js";
+import { verifyToken } from "../middleware/jwt.js";
 
-const router = express.Router()
+const router = express.Router();
 
-
-
-router.get('/', fn)
+router.delete("/:id", verifyToken, deleteUser);
+router.get("/:id", getUser);
 
 export default router;
