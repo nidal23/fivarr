@@ -1,6 +1,5 @@
 import "./gigs.scss"
 import React, { useRef, useState } from "react";
-import { gigs } from "../../data";
 import GigCard from "../../components/gigCard/GigCard";
 import newRequest from "../../utils/newRequest";
 import { useQuery } from "@tanstack/react-query";
@@ -13,10 +12,11 @@ const Gigs = () => {
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["repoData"],
-    queryFn: () => newRequest("/gigs"),
+    queryFn: () =>
+      newRequest.get("/gigs").then((res) => {
+        return res.data;
+      }),
   });
-
-  console.log(data);
 
   const reSort = (type) => {
     setSort(type);
@@ -62,9 +62,11 @@ const Gigs = () => {
           </div>
         </div>
         <div className="cards">
-          {gigs.map((gig) => (
-            <GigCard key={gig.id} item={gig} />
-          ))}
+          {isLoading
+            ? "loading..."
+            : error
+            ? "Something went wrong"
+            : data.map((gig) => <GigCard key={gig.id} item={gig} />)}
         </div>
       </div>
     </div>
